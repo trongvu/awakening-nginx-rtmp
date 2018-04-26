@@ -1,6 +1,8 @@
 FROM ubuntu:14.04
 MAINTAINER Reid Burke <me@reidburke.com>
 
+RUN sed -Ei 's/^# deb-src/deb-src/' /etc/apt/sources.list
+
 RUN apt-get -q -y update \
     && apt-get -q -y install cron logrotate make build-essential libssl-dev \
         zlib1g-dev libpcre3 libpcre3-dev curl pgp yasm \

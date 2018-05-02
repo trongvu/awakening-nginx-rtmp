@@ -33,6 +33,7 @@ http {
 		location /hls {
             types {
                 application/vnd.apple.mpegurl m3u8;
+		video/mp2t ts;
             }
 
             root /tmp;
@@ -141,11 +142,12 @@ rtmp {
 
     server {
         listen 1935;
+	publish_time_fix off;
+	ping 30s;
         notify_method get;
 
-        chunk_size 131072;
-        max_message 12M;
-        buflen 2s;
+        chunk_size 40000;
+        buflen 500ms;
 
         application pub_${PUBLISH_SECRET} {
             live on;
@@ -154,7 +156,6 @@ rtmp {
             deny play all;
 
             exec_push /usr/local/bin/avconv -i rtmp://localhost/pub_${PUBLISH_SECRET}/$name
-                -filter:v scale=-1:460
                 -c:a libfdk_aac -b:a 32k  -c:v libx264 -b:v 128k  -f flv rtmp://localhost/hls/$name_128
                 -c:a libfdk_aac -b:a 128k -c:v libx264 -b:v 512k  -f flv rtmp://localhost/hls/$name_512;
         }
